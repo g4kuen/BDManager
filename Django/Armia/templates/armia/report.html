@@ -1,0 +1,241 @@
+{% extends 'armia/base.html' %}
+
+{% block content %}
+    <h1>Отчет по солдатам</h1>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        th {
+            background-color: #009dff;
+            color: #fff;
+        }
+    </style>
+
+
+  {% if soldiers %}
+        <a href="{% url 'generate_excel' %}?filter={{  filter_value_report  }}&filter_column={{filter_column_index_report}}">Сгенерировать Excel отчет</a>
+        <a href="{% url 'generate_docx' %}?filter={{  filter_value_report  }}&filter_column={{filter_column_index_report}}">Сгенерировать Docx отчет</a>
+        <table id="filterable-table" class="display filterable-table">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Полное имя</th>
+                    <th onclick="sortTable(1)">Звание</th>
+                    <th onclick="sortTable(2)">Должность</th>
+                    <th onclick="sortTable(3)">Техника</th>
+                    <th onclick="sortTable(4)">Тип оружия</th>
+                    <th onclick="sortTableInt(5)">боезапас оружия</th>
+                    <th onclick="sortTable(6)">модель оружия</th>
+                    <th onclick="sortTable(7)">локация военной базы</th>
+                    <th onclick="sortTable(8)">тип военной базы</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for soldier in soldiers %}
+                    <tr>
+                        <td>{{ soldier.full_name }}</td>
+                        <td>{{ soldier.rank }}</td>
+                        <td>{{ soldier.job }}</td>
+                        <td>{{ soldier.enginiry.function }}</td>
+                        <td>{{ soldier.weapon.type }}</td>
+                        <td>{{ soldier.weapon.ammo_amount }}</td>
+                        <td>{{ soldier.weapon.model.name }}</td>
+                        <td>{{ soldier.military_base.id }}</td>
+                        <td>{{ soldier.military_base.base_type }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <form id="filterForm" method="get" action="{% url 'generate_report' %}">
+            <label for="filterTextbox">Фильтр:</label>
+            <input type="text" id="filterTextbox" name="filter" />
+
+            <label for="columnSelector">Выберите столбец для фильтрации:</label>
+            <select id="columnSelector" name="filter_column">
+                <option value="0">Полное имя</option>
+                <option value="1">Звание</option>
+                <option value="2">Должность</option>
+                <option value="3">Техника</option>
+                <option value="4">Тип оружия</option>
+                <option value="5">боезапас оружия</option>
+                <option value="6">модель оружия</option>
+                <option value="7">локация военной базы</option>
+                <option value="8">тип военной базы</option>
+            </select>
+
+            <button type="submit" id="applyFilterButton">Применить фильтр</button>
+        </form>
+
+    <button onclick="goBack()">Назад</button>
+    {% else %}
+        <p>Выборка пуста. Нет данных для отображения.</p>
+        <button onclick="goBackReport()">Назад</button>
+    {% endif %}
+
+<script>
+    function goBackReport() {
+        window.location.href = '{% url "generate_report" %}';
+    }
+
+</script>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("filterable-table");
+            switching = true;
+            dir = "asc";
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (dir === "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir === "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount === 0 && dir === "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+        function sortTableInt(n) {
+    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+    table = document.getElementById("filterable-table");
+    switching = true;
+    dir = "asc";
+    while (switching) {
+        switching = false;
+        rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            x = rows[i].getElementsByTagName("TD")[n];
+            y = rows[i + 1].getElementsByTagName("TD")[n];
+            if (dir === "asc") {
+                if (parseFloat(x.innerHTML) > parseFloat(y.innerHTML)) {
+                    shouldSwitch = true;
+                    break;
+                }
+            } else if (dir === "desc") {
+                if (parseFloat(x.innerHTML) < parseFloat(y.innerHTML)) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            switchcount++;
+        } else {
+            if (switchcount === 0 && dir === "asc") {
+                dir = "desc";
+                switching = true;
+            }
+        }
+    }
+}
+
+       function filterTables() {
+    var searchText = document.getElementById('filterTextbox').value.toLowerCase();
+    var selectedColumn = document.getElementById('columnSelector').value; // Получаем выбранный столбец
+    var rows = document.querySelectorAll('#filterable-table tbody tr');
+
+    rows.forEach(function (row) {
+        var cells = row.cells;
+        var isMatch = false;
+
+        var cellText = cells[selectedColumn].textContent.toLowerCase();
+
+        if (cellText.includes(searchText)) {
+            isMatch = true;
+        }
+
+
+        row.style.display = isMatch ? 'table-row' : 'none';
+    });
+
+
+}
+
+        document.getElementById('applyFilterButton').addEventListener('click', function () {
+           filterTables();
+            });
+
+document.getElementById('filterForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+
+    if (window.location.pathname === '{% url "generate_report" %}') {
+
+        var selectedColumn = document.getElementById('columnSelector').value;
+        var filterValue = document.getElementById('filterTextbox').value;
+
+
+        var redirectUrl = '{% url "generate_report" %}?filter=' + filterValue+"&filter_column="+selectedColumn;
+
+        // Выполнение редиректа
+        window.location.href = redirectUrl;
+    }
+});
+
+
+ document.getElementById('filterTextbox').addEventListener('keypress', function (event) {
+            var columnIndex = document.getElementById('columnSelector').value;
+            if (columnIndex === "5"){ // Если выбран столбец "Количество боезапаса"
+                // Проверка, является ли введенный символ цифрой
+                var isDigit = /^\d$/.test(String.fromCharCode(event.keyCode));
+
+                // Если не цифра, отменить событие ввода
+                if (!isDigit) {
+                    event.preventDefault();
+                }
+            }
+        });
+
+
+    </script>
+{% endblock %}

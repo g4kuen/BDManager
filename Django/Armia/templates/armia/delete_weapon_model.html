@@ -1,0 +1,11 @@
+{% extends 'armia/base.html' %}
+
+{% block content %}
+  <title>Подтверждение удаления</title>
+  <h2>Вы уверены, что хотите удалить модель оружия "{{ weaponModel.name }}"?</h2>
+  <form method="post" action="{% url 'delete_weapon_model' weaponModel.id %}">
+      {% csrf_token %}
+      <button type="submit">Удалить</button>
+  </form>
+  <a href="{% url 'tables_WeaponModel' %}">Отмена</a>
+{% endblock %}

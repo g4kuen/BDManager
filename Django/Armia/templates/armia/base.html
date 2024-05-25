@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        #tableSelector option[value=""][disabled] {
+            display: none;
+        }
+    </style>
+<script src="https://cdn.jsdelivr.net/npm/exceljs/dist/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.20.2/docxtemplater.js"></script>
+    <script>
+        const socket = new WebSocket('ws://ваш_домен/ws/some_path/');
+
+
+        socket.addEventListener('open', (event) => {
+            console.log('WebSocket соединение установлено.');
+        });
+
+
+        socket.addEventListener('message', (event) => {
+            console.log('Получено сообщение:', event.data);
+
+
+            document.getElementById('realtime-data').innerHTML = event.data;
+        });
+    </script>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+</head>
+<script>
+
+    document.getElementById('tableSelector').onchange = changeTable;
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var selectedTable = localStorage.getItem('selectedTable');
+
+
+        if (selectedTable) {
+            document.getElementById('tableSelector').value = selectedTable;
+        }
+    });
+
+    function changeTable() {
+
+        var selectedTable = document.getElementById('tableSelector').value;
+
+
+        localStorage.setItem('selectedTable', selectedTable);
+        window.location.href = '/tables/' + selectedTable;
+    }
+
+
+
+</script>
+
+
+<body>
+{% block mainmenu %}
+<select id="tableSelector" onchange="changeTable()" onclick="hidePlaceholder()">
+    <option value="" disabled selected>Выберите таблицу</option>
+    <option value="WeaponModel">Модель оружия</option>
+    <option value="EnginiryType">Тип техники</option>
+    <option value="MilitaryBase">Военная база</option>
+    <option value="Weapon">Оружие</option>
+    <option value="Soldier">Солдат</option>
+    <option value="BaseCodes">Коды баз</option>
+    <option value="Army">Армия</option>
+    <option value="Enginiry">техника</option>
+
+</select>
+<ul>
+    {% for m in menu %}
+        <li>{{ m }}</li>
+    {% endfor %}
+</ul>
+{% endblock mainmenu %}
+{% block content %}
+</body>
+</html>
+{% endblock content %}

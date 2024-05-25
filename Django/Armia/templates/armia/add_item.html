@@ -1,0 +1,76 @@
+{% extends 'armia/base.html' %}
+
+{% block content %}
+    <title>Добавить {{ table_name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+
+        .container form {
+            margin-top: 20px;
+        }
+
+        .container form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .container form input[type="text"],
+        .container form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+
+        .container form button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+
+    </style>
+    <div class="container">
+        <h2>Добавить {{ table_name }}</h2>
+        <form method="post" action="{% url 'add_item' table_name=table_name %}">
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button type="submit">Добавить</button>
+        </form>
+    </div>
+{% endblock %}

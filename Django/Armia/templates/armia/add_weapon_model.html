@@ -1,0 +1,11 @@
+{% extends 'armia/base.html' %}
+
+{% block content %}
+  <title>Добавить модель оружия</title>
+  <h2>Добавить модель оружия</h2>
+  <form method="post" action="{% url 'add_weapon_model' %}">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Добавить</button>
+  </form>
+{% endblock %}

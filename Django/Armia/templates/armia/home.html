@@ -1,0 +1,91 @@
+{% extends 'armia/base.html' %}
+
+{% block content %}
+<style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h3 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        #edit-button {
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+    <div class="container mt-5">
+        <h3 class="mb-4">Добро пожаловать на домашнюю страницу! Она домашняя и отображает данные для солдата! Она домашняя и максимально дружелюбная!!!!</h3>
+
+        <form method="get" action="{% url 'home' %}" class="mb-3">
+            <div class="input-group">
+
+                <div class="input-group-append">
+
+                </div>
+            </div>
+        </form>
+
+        <table id="soldiersTable" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Полное имя</th>
+                    <th>Звание</th>
+                    <th>Должность</th>
+                    <th>Техника</th>
+                    <th>Оружие</th>
+                    <th>Военная база</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for soldier in soldiers %}
+                    <tr>
+                        <td>{{ soldier.full_name }}</td>
+                        <td>{{ soldier.rank }}</td>
+                        <td>{{ soldier.job }}</td>
+                        <td>{{ soldier.enginiry }}</td>
+                        <td>{{ soldier.weapon }}</td>
+                        <td>{{ soldier.military_base }}</td>
+                        <td>
+                    <a href="{% if soldier.id %}{% url 'edit_item' table_name='Soldier' item_id=soldier.id %}{% endif %}">Редактировать</a>
+<a href="{% if soldier.id %}{% url 'delete_item' table_name='Soldier' item_id=soldier.id %}{% endif %}">Удалить</a>
+                </td>
+
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#soldiersTable').DataTable({
+                "order": [],
+            });
+        });
+    </script>
+{% endblock %}
